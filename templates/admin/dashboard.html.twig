@@ -1,0 +1,135 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Admin Dashboard - HomeArchive{% endblock %}
+
+{% block body %}
+<div class="px-4">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-white">Admin Dashboard</h1>
+        <p class="mt-2 text-gray-400">Systeemoverzicht en statistieken</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+        <!-- Total Users -->
+        <div class="bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-700">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-users text-3xl text-blue-500"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-400 truncate">Totaal gebruikers</dt>
+                            <dd class="text-2xl font-semibold text-white">{{ total_users }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Subscriptions -->
+        <div class="bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-700">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-file-invoice-dollar text-3xl text-green-500"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-400 truncate">Totaal abonnementen</dt>
+                            <dd class="text-2xl font-semibold text-white">{{ total_subscriptions }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Passwords -->
+        <div class="bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-700">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-lock text-3xl text-purple-500"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-400 truncate">Totaal wachtwoorden</dt>
+                            <dd class="text-2xl font-semibold text-white">{{ total_passwords }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Server Information -->
+        <div class="bg-gray-800 shadow rounded-lg p-6 border border-gray-700">
+            <h2 class="text-lg font-semibold text-white mb-4">
+                <i class="fas fa-server text-green-500"></i> Server Informatie
+            </h2>
+            <dl class="space-y-3">
+                <div class="flex justify-between">
+                    <dt class="text-gray-400">PHP Versie:</dt>
+                    <dd class="text-white font-medium">{{ server_info.php_version }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-400">Symfony Versie:</dt>
+                    <dd class="text-white font-medium">{{ server_info.symfony_version }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-400">Database:</dt>
+                    <dd class="text-white font-medium">{{ server_info.database }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-400">Geheugen gebruik:</dt>
+                    <dd class="text-white font-medium">{{ server_info.memory_usage }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-400">Piek geheugen:</dt>
+                    <dd class="text-white font-medium">{{ server_info.peak_memory }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Recent Users -->
+        <div class="bg-gray-800 shadow rounded-lg p-6 border border-gray-700">
+            <h2 class="text-lg font-semibold text-white mb-4">
+                <i class="fas fa-user-clock text-blue-500"></i> Recente gebruikers
+            </h2>
+            {% if recent_users|length > 0 %}
+            <div class="space-y-3">
+                {% for user in recent_users %}
+                <div class="flex items-center justify-between p-3 bg-gray-700 rounded-md">
+                    <div>
+                        <p class="font-medium text-white">{{ user.name }}</p>
+                        <p class="text-sm text-gray-400">{{ user.email }}</p>
+                    </div>
+                    <span class="text-xs text-gray-400">{{ user.createdAt|date('d-m-Y') }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-400 text-center py-4">Geen gebruikers</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 bg-gray-800 shadow rounded-lg p-6 border border-gray-700">
+        <h2 class="text-lg font-semibold text-white mb-4">Snelle acties</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a href="{{ path('admin_user_create') }}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                <i class="fas fa-user-plus mr-2"></i> Nieuwe gebruiker
+            </a>
+            <a href="{{ path('admin_administrator_create') }}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                <i class="fas fa-user-shield mr-2"></i> Nieuwe admin
+            </a>
+            <a href="{{ path('admin_users') }}" class="flex items-center justify-center px-4 py-3 border border-gray-600 text-sm font-medium rounded-md text-gray-300 bg-gray-700 hover:bg-gray-600">
+                <i class="fas fa-list mr-2"></i> Alle gebruikers
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Categorieën - HomeArchive{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">
+            <i class="fas fa-tags text-blue-600"></i> Mijn Categorieën
+        </h1>
+        <a href="{{ path('category_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+            <i class="fas fa-plus"></i> Nieuwe Categorie
+        </a>
+    </div>
+
+    {% if categories|length > 0 %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for category in categories %}
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition border-l-4" style="border-left-color: {{ category.color }};">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full mr-3" style="background-color: {{ category.color }};"></div>
+                            <h3 class="text-xl font-semibold text-gray-900">{{ category.name }}</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-gray-600 mb-4">
+                        <i class="fas fa-calendar"></i> {{ category.createdAt|date('d-m-Y') }}
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <a href="{{ path('category_edit', {id: category.id}) }}" 
+                           class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm">
+                            <i class="fas fa-edit"></i> Bewerken
+                        </a>
+                        <form method="post" action="{{ path('category_delete', {id: category.id}) }}" 
+                              onsubmit="return confirm('Weet u zeker dat u deze categorie wilt verwijderen?');"
+                              class="flex-1">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">
+                                <i class="fas fa-trash"></i> Verwijderen
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white rounded-lg shadow-md p-8 text-center">
+            <i class="fas fa-inbox text-gray-400 text-6xl mb-4"></i>
+            <p class="text-gray-600 mb-4">Geen categorieën gevonden.</p>
+            <a href="{{ path('category_create') }}" class="text-blue-600 hover:text-blue-700">
+                Voeg uw eerste categorie toe
+            </a>
+        </div>
+    {% endif %}
+
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p class="text-sm text-gray-700">
+            <i class="fas fa-info-circle text-blue-600"></i> 
+            <strong>Tip:</strong> Gebruik categorieën om uw abonnementen en verzekeringen te organiseren. Bijvoorbeeld: Streaming, Verzekeringen, Software, etc.
+        </p>
+    </div>
+</div>
+{% endblock %}

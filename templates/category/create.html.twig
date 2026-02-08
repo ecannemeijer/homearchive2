@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nieuwe Categorie - HomeArchive{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+    <div class="mb-6">
+        <a href="{{ path('category_index') }}" class="text-blue-600 hover:text-blue-700">
+            <i class="fas fa-arrow-left"></i> Terug naar categorieën
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-plus-circle text-blue-600"></i> Nieuwe Categorie
+        </h1>
+
+        <form method="post" action="{{ path('category_create') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('category') }}">
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Naam *</label>
+                <input type="text" name="name" required value=""
+                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       placeholder="Bijv. Streaming, Verzekeringen, Software">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Kleur</label>
+                <div class="flex gap-4 items-center">
+                    <input type="color" name="color" value="#3B82F6" id="colorPicker"
+                           class="w-20 h-12 border border-gray-300 rounded cursor-pointer">
+                    <span class="text-gray-600">Kies een kleur om uw categorie visueel te onderscheiden</span>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded p-4 mb-6">
+                <p class="text-sm text-gray-700">
+                    <i class="fas fa-lightbulb text-yellow-500"></i> 
+                    <strong>Tip:</strong> Gebruik duidelijke namen en kleuren om uw categorieën gemakkelijk te herkennen in overzichten.
+                </p>
+            </div>
+
+            <div class="flex gap-4">
+                <button type="submit" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+                    <i class="fas fa-save"></i> Opslaan
+                </button>
+                <a href="{{ path('category_index') }}" 
+                   class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold text-center">
+                    Annuleren
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

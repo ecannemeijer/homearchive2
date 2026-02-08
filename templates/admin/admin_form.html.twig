@@ -1,0 +1,66 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}{{ admin ? 'Bewerk Administrator' : 'Nieuwe Administrator' }} - Admin{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+    <div class="mb-6">
+        <a href="{{ path('admin_administrators') }}" class="text-gray-300 hover:text-white">
+            <i class="fas fa-arrow-left"></i> Terug naar administrators
+        </a>
+    </div>
+
+    <div class="bg-gray-800 rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold text-white mb-6">
+            <i class="fas fa-user-shield text-purple-500"></i> 
+            {{ admin ? 'Bewerk Administrator' : 'Nieuwe Administrator' }}
+        </h1>
+
+        <div class="bg-purple-900 border border-purple-700 text-purple-200 px-4 py-3 rounded mb-6">
+            <i class="fas fa-shield-alt"></i> 
+            <strong>Let op:</strong> Administrator accounts hebben volledige toegang tot het systeem.
+        </div>
+
+        <form method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin') }}">
+
+            <div class="mb-6">
+                <label class="block text-gray-300 font-semibold mb-2">Gebruikersnaam *</label>
+                <input type="text" name="username" value="{{ admin ? admin.username : '' }}" required 
+                       class="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                       placeholder="admin123">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-300 font-semibold mb-2">Naam</label>
+                <input type="text" name="name" value="{{ admin ? admin.name : '' }}"
+                       class="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                       placeholder="Volledige naam (optioneel)">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-300 font-semibold mb-2">Wachtwoord {{ admin ? '' : '*' }}</label>
+                <input type="password" name="password" {{ admin ? '' : 'required' }}
+                       class="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                       placeholder="{{ admin ? 'Laat leeg om ongewijzigd te laten' : 'Minimaal 8 tekens' }}">
+                {% if admin %}
+                    <p class="text-sm text-gray-400 mt-1">Laat leeg om het huidige wachtwoord te behouden</p>
+                {% else %}
+                    <p class="text-sm text-gray-400 mt-1">Minimaal 8 tekens, gebruik een sterk wachtwoord</p>
+                {% endif %}
+            </div>
+
+            <div class="flex gap-4">
+                <button type="submit" 
+                        class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold">
+                    <i class="fas fa-save"></i> {{ admin ? 'Opslaan' : 'Aanmaken' }}
+                </button>
+                <a href="{{ path('admin_administrators') }}" 
+                   class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold text-center">
+                    Annuleren
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

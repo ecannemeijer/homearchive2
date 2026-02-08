@@ -1,0 +1,147 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - HomeArchive{% endblock %}
+
+{% block body %}
+<div class="px-4">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p class="mt-2 text-gray-600">Welkom terug, {{ app.user.name }}</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <!-- Total Subscriptions -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-file-invoice-dollar text-3xl text-blue-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Abonnementen</dt>
+                            <dd class="text-2xl font-semibold text-gray-900">{{ subscription_count }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Insurance -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-shield-alt text-3xl text-green-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Verzekeringen</dt>
+                            <dd class="text-2xl font-semibold text-gray-900">{{ insurance_count }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Passwords -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-lock text-3xl text-purple-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Wachtwoorden</dt>
+                            <dd class="text-2xl font-semibold text-gray-900">{{ total_passwords }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Cost -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-euro-sign text-3xl text-yellow-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Per maand</dt>
+                            <dd class="text-2xl font-semibold text-gray-900">€ {{ monthly_cost|number_format(2, ',', '.') }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Expiring Soon -->
+        {% if expiring_subscriptions|length > 0 %}
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-exclamation-triangle text-orange-500"></i> Verlopen binnenkort
+            </h2>
+            <div class="space-y-3">
+                {% for sub in expiring_subscriptions %}
+                <div class="flex items-center justify-between p-3 bg-orange-50 rounded-md">
+                    <div>
+                        <p class="font-medium text-gray-900">{{ sub.name }}</p>
+                        <p class="text-sm text-gray-600">Verloopt: {{ sub.endDate|date('d-m-Y') }}</p>
+                    </div>
+                    <a href="{{ path('subscription_show', {id: sub.id}) }}" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Subscriptions -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-clock"></i> Recent toegevoegd
+            </h2>
+            {% if recent_subscriptions|length > 0 %}
+            <div class="space-y-3">
+                {% for sub in recent_subscriptions %}
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                    <div>
+                        <p class="font-medium text-gray-900">{{ sub.name }}</p>
+                        <p class="text-sm text-gray-600">€ {{ sub.cost }} / {{ sub.frequency == 'monthly' ? 'maand' : 'jaar' }}</p>
+                    </div>
+                    <a href="{{ path('subscription_show', {id: sub.id}) }}" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-4">Nog geen abonnementen</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Snelle acties</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a href="{{ path('subscription_create') }}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i> Nieuw abonnement
+            </a>
+            <a href="{{ path('password_vault_create') }}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
+                <i class="fas fa-key mr-2"></i> Nieuw wachtwoord
+            </a>
+            <a href="{{ path('subscription_index') }}" class="flex items-center justify-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                <i class="fas fa-list mr-2"></i> Alles bekijken
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bewerk {{ password.title }} - HomeArchive{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8 max-w-3xl">
+    <div class="mb-6">
+        <a href="{{ path('password_vault_show', {id: password.id}) }}" class="text-blue-600 hover:text-blue-700">
+            <i class="fas fa-arrow-left"></i> Terug
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-edit text-blue-600"></i> Bewerk Wachtwoord
+        </h1>
+
+        <form method="post" action="{{ path('password_vault_edit', {id: password.id}) }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('password_vault' ~ password.id) }}">
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Titel *</label>
+                <input type="text" name="title" value="{{ password.title }}" required 
+                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Website URL</label>
+                <input type="url" name="website_url" value="{{ password.websiteUrl }}"
+                       class="w-full border border-gray-300 rounded px-3 py-2">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Gebruikersnaam</label>
+                <input type="text" name="username" value="{{ password.username }}"
+                       class="w-full border border-gray-300 rounded px-3 py-2">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Wachtwoord</label>
+                <div class="flex gap-2">
+                    <input type="password" name="password" id="password" 
+                           class="flex-1 border border-gray-300 rounded px-3 py-2"
+                           placeholder="Laat leeg om ongewijzigd te laten">
+                    <button type="button" onclick="togglePassword()" 
+                            class="bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded">
+                        <i class="fas fa-eye" id="toggleIcon"></i>
+                    </button>
+                    <button type="button" onclick="generatePassword()" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded">
+                        <i class="fas fa-random"></i> Genereer
+                    </button>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">Laat leeg om het huidige wachtwoord te behouden</p>
+            </div>
+
+            <div class="mb-6 bg-yellow-50 border border-yellow-200 rounded p-4">
+                <p class="text-sm text-gray-700 mb-2">
+                    <i class="fas fa-info-circle text-blue-600"></i> 
+                    <strong>Huidig wachtwoord:</strong>
+                </p>
+                <div class="flex gap-2">
+                    <input type="password" id="currentPassword" value="{{ decrypted_password }}" readonly
+                           class="flex-1 bg-white px-3 py-2 rounded font-mono text-sm">
+                    <button type="button" onclick="toggleCurrent()" 
+                            class="bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded">
+                        <i class="fas fa-eye" id="currentIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Tags</label>
+                <input type="text" name="tags" value="{{ password.tags }}"
+                       class="w-full border border-gray-300 rounded px-3 py-2"
+                       placeholder="Gescheiden door komma's">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Notities</label>
+                <textarea name="notes" rows="4" 
+                          class="w-full border border-gray-300 rounded px-3 py-2">{{ password.notes }}</textarea>
+            </div>
+
+            <div class="flex gap-4">
+                <button type="submit" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+                    <i class="fas fa-save"></i> Opslaan
+                </button>
+                <a href="{{ path('password_vault_show', {id: password.id}) }}" 
+                   class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold text-center">
+                    Annuleren
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const icon = document.getElementById('toggleIcon');
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+function toggleCurrent() {
+    const currentInput = document.getElementById('currentPassword');
+    const icon = document.getElementById('currentIcon');
+    if (currentInput.type === 'password') {
+        currentInput.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        currentInput.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+function generatePassword() {
+    const length = 16;
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+        password += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    document.getElementById('password').value = password;
+    document.getElementById('password').type = 'text';
+    document.getElementById('toggleIcon').className = 'fas fa-eye-slash';
+}
+</script>
+{% endblock %}

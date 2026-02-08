@@ -1,0 +1,59 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}{{ user ? 'Bewerk Gebruiker' : 'Nieuwe Gebruiker' }} - Admin{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+    <div class="mb-6">
+        <a href="{{ path('admin_users') }}" class="text-gray-300 hover:text-white">
+            <i class="fas fa-arrow-left"></i> Terug naar gebruikers
+        </a>
+    </div>
+
+    <div class="bg-gray-800 rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold text-white mb-6">
+            <i class="fas fa-user-plus text-green-500"></i> 
+            {{ user ? 'Bewerk Gebruiker' : 'Nieuwe Gebruiker' }}
+        </h1>
+
+        <form method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_user') }}">
+
+            <div class="mb-6">
+                <label class="block text-gray-300 font-semibold mb-2">Naam *</label>
+                <input type="text" name="name" value="{{ user ? user.name : '' }}" required 
+                       class="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                       placeholder="Volledige naam">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-300 font-semibold mb-2">E-mailadres *</label>
+                <input type="email" name="email" value="{{ user ? user.email : '' }}" required 
+                       class="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                       placeholder="gebruiker@example.com">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-300 font-semibold mb-2">Wachtwoord {{ user ? '' : '*' }}</label>
+                <input type="password" name="password" {{ user ? '' : 'required' }}
+                       class="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                       placeholder="{{ user ? 'Laat leeg om ongewijzigd te laten' : 'Minimaal 6 tekens' }}">
+                {% if user %}
+                    <p class="text-sm text-gray-400 mt-1">Laat leeg om het huidige wachtwoord te behouden</p>
+                {% endif %}
+            </div>
+
+            <div class="flex gap-4">
+                <button type="submit" 
+                        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold">
+                    <i class="fas fa-save"></i> {{ user ? 'Opslaan' : 'Aanmaken' }}
+                </button>
+                <a href="{{ path('admin_users') }}" 
+                   class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold text-center">
+                    Annuleren
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

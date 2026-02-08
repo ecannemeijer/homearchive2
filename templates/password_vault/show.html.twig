@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ password.title }} - HomeArchive{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="mb-6">
+        <a href="{{ path('password_vault_index') }}" class="text-blue-600 hover:text-blue-700">
+            <i class="fas fa-arrow-left"></i> Terug naar wachtwoordkluis
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    <i class="fas fa-key text-blue-600"></i> {{ password.title }}
+                </h1>
+                {% if password.tags %}
+                    <div class="flex gap-2 mt-2">
+                        {% for tag in password.tags|split(',') %}
+                            <span class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded">{{ tag|trim }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="flex gap-2">
+                <a href="{{ path('password_vault_edit', {id: password.id}) }}" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                    <i class="fas fa-edit"></i> Bewerken
+                </a>
+                <form method="post" action="{{ path('password_vault_delete', {id: password.id}) }}" 
+                      onsubmit="return confirm('Weet u zeker dat u dit wachtwoord wilt verwijderen?');">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete' ~ password.id) }}">
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                        <i class="fas fa-trash"></i> Verwijderen
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Password Details -->
+        <div class="space-y-6">
+            {% if password.websiteUrl %}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Website</h3>
+                    <a href="{{ password.websiteUrl }}" target="_blank" class="text-blue-600 hover:text-blue-700 text-lg">
+                        <i class="fas fa-external-link-alt"></i> {{ password.websiteUrl }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if password.username %}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Gebruikersnaam</h3>
+                    <div class="flex items-center gap-2">
+                        <p class="text-gray-900 text-lg font-mono bg-gray-50 px-4 py-2 rounded">{{ password.username }}</p>
+                        <button onclick="navigator.clipboard.writeText('{{ password.username }}')" 
+                                class="text-blue-600 hover:text-blue-700 text-xl">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 mb-2">Wachtwoord</h3>
+                <div class="flex items-center gap-2">
+                    <div class="flex-1 relative">
+                        <input type="password" id="passwordField" value="{{ decrypted_password }}" readonly
+                               class="w-full text-lg font-mono bg-yellow-50 border-2 border-yellow-400 px-4 py-3 rounded">
+                        <div class="absolute top-0 right-0 h-full flex items-center pr-2">
+                            <span class="bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded">
+                                <i class="fas fa-lock"></i> Versleuteld
+                            </span>
+                        </div>
+                    </div>
+                    <button onclick="togglePasswordVisibility()" 
+                            class="bg-gray-200 hover:bg-gray-300 px-4 py-3 rounded text-xl">
+                        <i class="fas fa-eye" id="toggleIcon"></i>
+                    </button>
+                    <button onclick="navigator.clipboard.writeText('{{ decrypted_password }}')" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded text-xl">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">
+                    <i class="fas fa-shield-alt"></i> Opgeslagen met AES-256-CBC encryptie
+                </p>
+            </div>
+
+            {% if password.notes %}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Notities</h3>
+                    <div class="bg-gray-50 border border-gray-200 rounded p-4">
+                        <p class="text-gray-700 whitespace-pre-wrap">{{ password.notes }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="border-t pt-4">
+                <p class="text-sm text-gray-500">
+                    <i class="fas fa-calendar"></i> 
+                    Aangemaakt: {{ password.createdAt|date('d-m-Y H:i') }}
+                </p>
+                {% if password.updatedAt %}
+                    <p class="text-sm text-gray-500 mt-1">
+                        <i class="fas fa-calendar-check"></i> 
+                        Laatst bijgewerkt: {{ password.updatedAt|date('d-m-Y H:i') }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePasswordVisibility() {
+    const field = document.getElementById('passwordField');
+    const icon = document.getElementById('toggleIcon');
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        field.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+</script>
+{% endblock %}

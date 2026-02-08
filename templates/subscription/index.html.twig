@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Abonnementen - HomeArchive{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">
+            <i class="fas fa-calendar-check text-blue-600"></i> Mijn Abonnementen
+        </h1>
+        <a href="{{ path('subscription_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+            <i class="fas fa-plus"></i> Nieuw Abonnement
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <form method="get" class="flex gap-4 flex-wrap">
+            <div>
+                <input type="text" name="search" value="{{ search }}" placeholder="Zoeken..." 
+                       class="border border-gray-300 rounded px-3 py-2">
+            </div>
+            <div>
+                <select name="type" class="border border-gray-300 rounded px-3 py-2">
+                    <option value="">Alle Types</option>
+                    <option value="subscription" {{ current_type == 'subscription' ? 'selected' : '' }}>Abonnementen</option>
+                    <option value="insurance" {{ current_type == 'insurance' ? 'selected' : '' }}>Verzekeringen</option>
+                </select>
+            </div>
+            <div>
+                <select name="category" class="border border-gray-300 rounded px-3 py-2">
+                    <option value="">Alle Categorieën</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.name }}" {{ current_category == cat.name ? 'selected' : '' }}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
+                <i class="fas fa-search"></i> Filteren
+            </button>
+        </form>
+    </div>
+
+    <!-- Subscriptions List -->
+    {% if subscriptions|length > 0 %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for subscription in subscriptions %}
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900">{{ subscription.name }}</h3>
+                        <span class="px-2 py-1 text-xs rounded {{ subscription.type == 'subscription' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
+                            {{ subscription.type == 'subscription' ? 'Abonnement' : 'Verzekering' }}
+                        </span>
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        <p class="text-2xl font-bold text-blue-600">€{{ subscription.cost|number_format(2, ',', '.') }}</p>
+                        <p class="text-sm text-gray-600">per {{ subscription.frequency == 'monthly' ? 'maand' : 'jaar' }}</p>
+                        {% if subscription.category %}
+                            <p class="text-sm text-gray-600"><i class="fas fa-tag"></i> {{ subscription.category }}</p>
+                        {% endif %}
+                        {% if subscription.endDate %}
+                            <p class="text-sm text-gray-600"><i class="fas fa-calendar"></i> Eindigt: {{ subscription.endDate|date('d-m-Y') }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <a href="{{ path('subscription_show', {id: subscription.id}) }}" 
+                           class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm">
+                            <i class="fas fa-eye"></i> Bekijken
+                        </a>
+                        <a href="{{ path('subscription_edit', {id: subscription.id}) }}" 
+                           class="flex-1 text-center bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm">
+                            <i class="fas fa-edit"></i> Bewerken
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white rounded-lg shadow-md p-8 text-center">
+            <i class="fas fa-inbox text-gray-400 text-6xl mb-4"></i>
+            <p class="text-gray-600 mb-4">Geen abonnementen gevonden.</p>
+            <a href="{{ path('subscription_create') }}" class="text-blue-600 hover:text-blue-700">
+                Voeg uw eerste abonnement toe
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
