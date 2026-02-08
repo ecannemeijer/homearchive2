@@ -78,6 +78,7 @@ class SubscriptionController extends AbstractController
             $subscription->setStartDate($request->request->get('start_date') ? new \DateTime($request->request->get('start_date')) : null);
             $subscription->setEndDate($request->request->get('end_date') ? new \DateTime($request->request->get('end_date')) : null);
             $subscription->setIsMonthlyCancelable($request->request->get('is_monthly_cancelable') === '1');
+            $subscription->setIsActive($request->request->get('is_active') === '1');
             $subscription->setUsername($request->request->get('username'));
             $subscription->setWebsiteUrl($request->request->get('website_url'));
             $subscription->setNotes($request->request->get('notes'));
