@@ -15,36 +15,73 @@
     <nav class="bg-gray-800 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex">
+                <div class="flex items-center">
                     <div class="flex-shrink-0 flex items-center">
-                        <a href="{{ path('admin_dashboard') }}" class="text-xl font-bold text-white">
-                            <i class="fas fa-shield-alt"></i> Admin Panel
+                        <a href="{{ path('admin_dashboard') }}" class="text-lg sm:text-xl font-bold text-white">
+                            <i class="fas fa-shield-alt"></i> <span class="hidden xs:inline">Admin Panel</span>
                         </a>
                     </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                    <div class="hidden md:ml-6 md:flex md:space-x-4">
                         <a href="{{ path('admin_dashboard') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
                         </a>
                         <a href="{{ path('admin_users') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-users mr-2"></i> Gebruikers
+                            <i class="fas fa-users mr-1"></i> Gebruikers
                         </a>
                         <a href="{{ path('admin_administrators') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-user-shield mr-2"></i> Administrators
+                            <i class="fas fa-user-shield mr-1"></i> Admins
                         </a>
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <span class="text-gray-300 mr-4">{{ app.user.username }}</span>
-                    <a href="{{ path('admin_change_password') }}" class="text-gray-300 hover:text-white mr-4">
+                    <span class="hidden sm:block text-gray-300 text-sm mr-3">{{ app.user.username }}</span>
+                    <a href="{{ path('admin_change_password') }}" class="hidden sm:flex text-gray-300 hover:text-white mr-3">
                         <i class="fas fa-key"></i>
                     </a>
-                    <a href="{{ path('admin_logout') }}" class="text-gray-300 hover:text-white">
+                    <a href="{{ path('admin_logout') }}" class="hidden sm:flex text-gray-300 hover:text-white">
                         <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                    <!-- Mobile menu button -->
+                    <button type="button" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:bg-gray-700 focus:outline-none" onclick="toggleAdminMobileMenu()">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="admin-mobile-menu" class="hidden md:hidden border-t border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="{{ path('admin_dashboard') }}" class="block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                </a>
+                <a href="{{ path('admin_users') }}" class="block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-users mr-2"></i> Gebruikers
+                </a>
+                <a href="{{ path('admin_administrators') }}" class="block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-user-shield mr-2"></i> Administrators
+                </a>
+                <div class="border-t border-gray-700 pt-2 mt-2">
+                    <div class="px-3 py-2 text-sm text-gray-400">
+                        Ingelogd als: <span class="font-semibold text-gray-300">{{ app.user.username }}</span>
+                    </div>
+                    <a href="{{ path('admin_change_password') }}" class="block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-key mr-2"></i> Wachtwoord wijzigen
+                    </a>
+                    <a href="{{ path('admin_logout') }}" class="block text-red-400 hover:bg-gray-700 hover:text-red-300 px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Uitloggen
                     </a>
                 </div>
             </div>
         </div>
     </nav>
+    
+    <script>
+    function toggleAdminMobileMenu() {
+        const menu = document.getElementById('admin-mobile-menu');
+        menu.classList.toggle('hidden');
+    }
+    </script>
     {% endif %}
 
     <main class="{% if app.user and is_granted('ROLE_ADMIN') %}py-10{% endif %}">
