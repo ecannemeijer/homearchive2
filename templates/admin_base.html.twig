@@ -6,16 +6,32 @@
     <meta name="description" content="HomeArchive Admin Panel - Beheer gebruikers en systeem">
     <title>{% block title %}Admin - HomeArchive{% endblock %}</title>
     
-    <!-- Tailwind CSS CDN (Development) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Suppress Tailwind CDN Warning -->
     <script>
         // Suppress Tailwind CDN production warning
-        tailwind.config = {
-            theme: {
-                extend: {}
+        const originalWarn = console.warn;
+        console.warn = function(...args) {
+            if (typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) {
+                return;
             }
-        }
+            originalWarn.apply(console, args);
+        };
+        
+        // Suppress Stimulus debug logs
+        const originalLog = console.log;
+        console.log = function(...args) {
+            if (typeof args[0] === 'string' && (
+                args[0].includes('application #') || 
+                args[0].includes('AssetMapper')
+            )) {
+                return;
+            }
+            originalLog.apply(console, args);
+        };
     </script>
+    
+    <!-- Tailwind CSS CDN (Development) -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
@@ -26,6 +42,13 @@
     <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
     
     {% block stylesheets %}{% endblock %}
+    
+    <!-- AssetMapper Import Map - Keep persistent across Turbo navigation -->
+    <div id="importmap-scripts" data-turbo-permanent>
+        {% block importmap %}
+            {{ importmap('app') }}
+        {% endblock %}
+    </div>
 </head>
 <body class="bg-gray-100 no-scroll-x">
     {# Skip to main content for accessibility #}
@@ -194,8 +217,6 @@
         </div>
     </main>
 
-    {% block javascripts %}
-        {{ importmap('app') }}
-    {% endblock %}
+    {% block javascripts %}{% endblock %}
 </body>
 </html>
