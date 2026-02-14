@@ -93,4 +93,56 @@ class SecurityController extends AbstractController
         // This method will be intercepted by the security system
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
+
+    #[Route('/change-password', name: 'app_change_password')]
+    public function changePassword(
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $user = $this->getUser();
+        
+        if (!$user instanceof User) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        if ($request->isMethod('POST')) {
+            $currentPassword = $request->request->get('current_password');
+            $newPassword = $request->request->get('new_password');
+            $confirmPassword = $request->request->get('confirm_password');
+
+            // Validation
+            if (empty($currentPassword) || empty($newPassword) || empty($confirmPassword)) {
+                $this->addFlash('error', 'Alle velden zijn verplicht.');
+                return $this->render('security/change_password.html.twig');
+            }
+
+            // Verify current password
+            if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+                $this->addFlash('error', 'Huidig wachtwoord is onjuist.');
+                return $this->render('security/change_password.html.twig');
+            }
+
+            // Check if new passwords match
+            if ($newPassword !== $confirmPassword) {
+                $this->addFlash('error', 'Nieuwe wachtwoorden komen niet overeen.');
+                return $this->render('security/change_password.html.twig');
+            }
+
+            // Check password strength
+            if (strlen($newPassword) < 8) {
+                $this->addFlash('error', 'Nieuw wachtwoord moet minimaal 8 tekens zijn.');
+                return $this->render('security/change_password.html.twig');
+            }
+
+            // Update password
+            $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Wachtwoord succesvol gewijzigd!');
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        return $this->render('security/change_password.html.twig');
+    }
 }

@@ -3,93 +3,199 @@
 {% block title %}Abonnementen - HomeArchive{% endblock %}
 
 {% block body %}
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">
-            <i class="fas fa-calendar-check text-blue-600"></i> Mijn Abonnementen
+{# Subscriptions Index - Mobile-First Layout #}
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+    {# Header Section - Improved Responsive Layout #}
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
+            <i class="fas fa-calendar-check text-blue-600" aria-hidden="true"></i> 
+            <span>Mijn Abonnementen</span>
         </h1>
-        <a href="{{ path('subscription_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-            <i class="fas fa-plus"></i> Nieuw Abonnement
+        {# Primary Action Button - Touch Optimized #}
+        <a href="{{ path('subscription_create') }}" 
+           class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-3 sm:py-3.5 rounded-lg font-medium text-sm sm:text-base shadow-sm hover:shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fas fa-plus" aria-hidden="true"></i> 
+            <span>Nieuw Abonnement</span>
         </a>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-        <form method="get" class="flex gap-4 flex-wrap">
-            <div>
-                <input type="text" name="search" value="{{ search }}" placeholder="Zoeken..." 
-                       class="border border-gray-300 rounded px-3 py-2">
+    {# Live Search Section #}
+    <div class="bg-white rounded-lg shadow-md p-4 sm:p-5 mb-6 sm:mb-8">
+        <div class="relative">
+            <label for="live-search" class="sr-only">Zoeken</label>
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <i class="fas fa-search text-gray-400" aria-hidden="true"></i>
             </div>
-            <div>
-                <select name="type" class="border border-gray-300 rounded px-3 py-2">
-                    <option value="">Alle Types</option>
-                    <option value="subscription" {{ current_type == 'subscription' ? 'selected' : '' }}>Abonnementen</option>
-                    <option value="insurance" {{ current_type == 'insurance' ? 'selected' : '' }}>Verzekeringen</option>
-                </select>
-            </div>
-            <div>
-                <select name="category" class="border border-gray-300 rounded px-3 py-2">
-                    <option value="">Alle Categorieën</option>
-                    {% for cat in categories %}
-                        <option value="{{ cat.name }}" {{ current_category == cat.name ? 'selected' : '' }}>{{ cat.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
-                <i class="fas fa-search"></i> Filteren
-            </button>
-        </form>
+            <input type="text" 
+                   id="live-search"
+                   placeholder="Zoek op naam..." 
+                   class="w-full border border-gray-300 rounded-lg pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                   autocomplete="off">
+        </div>
     </div>
 
-    <!-- Subscriptions List -->
+    {# Subscriptions Table - Compact List View #}
     {% if subscriptions|length > 0 %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for subscription in subscriptions %}
-                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition {{ not subscription.isActive ? 'opacity-60' : '' }}">
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="text-xl font-semibold text-gray-900">
-                            {{ subscription.name }}
-                            {% if not subscription.isActive %}
-                                <span class="text-xs text-gray-500 font-normal ml-2">(inactief)</span>
-                            {% endif %}
-                        </h3>
-                        <span class="px-2 py-1 text-xs rounded {{ subscription.type == 'subscription' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
-                            {{ subscription.type == 'subscription' ? 'Abonnement' : 'Verzekering' }}
-                        </span>
-                    </div>
-                    
-                    <div class="space-y-2 mb-4">
-                        <p class="text-2xl font-bold text-blue-600">€{{ subscription.cost|number_format(2, ',', '.') }}</p>
-                        <p class="text-sm text-gray-600">per {{ subscription.frequency == 'monthly' ? 'maand' : 'jaar' }}</p>
-                        {% if subscription.category %}
-                            <p class="text-sm text-gray-600"><i class="fas fa-tag"></i> {{ subscription.category }}</p>
-                        {% endif %}
-                        {% if subscription.endDate %}
-                            <p class="text-sm text-gray-600"><i class="fas fa-calendar"></i> Eindigt: {{ subscription.endDate|date('d-m-Y') }}</p>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="flex gap-2">
-                        <a href="{{ path('subscription_show', {id: subscription.id}) }}" 
-                           class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm">
-                            <i class="fas fa-eye"></i> Bekijken
-                        </a>
-                        <a href="{{ path('subscription_edit', {id: subscription.id}) }}" 
-                           class="flex-1 text-center bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm">
-                            <i class="fas fa-edit"></i> Bewerken
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200" id="subscriptions-table">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Naam
+                            </th>
+                            <th scope="col" class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Type
+                            </th>
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Kosten
+                            </th>
+                            <th scope="col" class="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Categorie
+                            </th>
+                            <th scope="col" class="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Einddatum
+                            </th>
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Acties
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for subscription in subscriptions %}
+                        <tr class="subscription-row hover:bg-gray-50 transition-colors {{ not subscription.isActive ? 'opacity-60' : '' }}" 
+                            data-name="{{ subscription.name|lower }}" 
+                            data-category="{{ subscription.category|lower }}" 
+                            data-type="{{ subscription.type }}">
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ subscription.name }}
+                                            {% if not subscription.isActive %}
+                                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                                                    Inactief
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="sm:hidden text-xs text-gray-500 mt-1">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ subscription.type == 'subscription' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
+                                                {{ subscription.type == 'subscription' ? 'Abonnement' : 'Verzekering' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ subscription.type == 'subscription' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
+                                    {{ subscription.type == 'subscription' ? 'Abonnement' : 'Verzekering' }}
+                                </span>
+                            </td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-semibold text-gray-900">€{{ subscription.cost|number_format(2, ',', '.') }}</div>
+                                <div class="text-xs text-gray-500">/ {{ subscription.frequency == 'monthly' ? 'mnd' : 'jaar' }}</div>
+                            </td>
+                            <td class="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if subscription.category %}
+                                    <span class="inline-flex items-center">
+                                        <i class="fas fa-tag text-gray-400 mr-1" aria-hidden="true"></i>
+                                        {{ subscription.category }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if subscription.endDate %}
+                                    {{ subscription.endDate|date('d-m-Y') }}
+                                {% else %}
+                                    <span class="text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ path('subscription_show', {id: subscription.id}) }}" 
+                                       class="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                       aria-label="Bekijk {{ subscription.name }}">
+                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                        <span class="hidden sm:inline">Bekijken</span>
+                                    </a>
+                                    <a href="{{ path('subscription_edit', {id: subscription.id}) }}" 
+                                       class="inline-flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                       aria-label="Bewerk {{ subscription.name }}">
+                                        <i class="fas fa-edit" aria-hidden="true"></i>
+                                        <span class="hidden sm:inline">Bewerken</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     {% else %}
-        <div class="bg-white rounded-lg shadow-md p-8 text-center">
-            <i class="fas fa-inbox text-gray-400 text-6xl mb-4"></i>
-            <p class="text-gray-600 mb-4">Geen abonnementen gevonden.</p>
-            <a href="{{ path('subscription_create') }}" class="text-blue-600 hover:text-blue-700">
-                Voeg uw eerste abonnement toe
+        {# Empty State - Improved Design #}
+        <div class="bg-white rounded-lg shadow-md p-8 sm:p-12 text-center" id="empty-state">
+            <i class="fas fa-inbox text-gray-300 text-5xl sm:text-6xl mb-4" aria-hidden="true"></i>
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-2">Geen abonnementen gevonden</h3>
+            <p class="text-gray-500 mb-6">Voeg uw eerste abonnement toe om te beginnen</p>
+            <a href="{{ path('subscription_create') }}" 
+               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-plus" aria-hidden="true"></i>
+                <span>Nieuw abonnement toevoegen</span>
             </a>
         </div>
     {% endif %}
+    
+    {# No results found message (hidden by default) #}
+    <div id="no-results" class="hidden bg-white rounded-lg shadow-md p-8 text-center">
+        <i class="fas fa-search text-gray-300 text-5xl mb-4" aria-hidden="true"></i>
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Geen resultaten gevonden</h3>
+        <p class="text-gray-500">Probeer een andere zoekterm</p>
+    </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    // Live search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('live-search');
+        const table = document.getElementById('subscriptions-table');
+        const rows = document.querySelectorAll('.subscription-row');
+        const noResults = document.getElementById('no-results');
+        const emptyState = document.getElementById('empty-state');
+        
+        if (searchInput && rows.length > 0) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                let visibleCount = 0;
+                
+                rows.forEach(function(row) {
+                    const name = row.getAttribute('data-name') || '';
+                    const category = row.getAttribute('data-category') || '';
+                    const type = row.getAttribute('data-type') || '';
+                    
+                    if (name.includes(searchTerm) || category.includes(searchTerm) || type.includes(searchTerm)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide no results message
+                if (visibleCount === 0 && searchTerm !== '') {
+                    if (table) table.parentElement.parentElement.style.display = 'none';
+                    if (noResults) noResults.classList.remove('hidden');
+                } else {
+                    if (table) table.parentElement.parentElement.style.display = '';
+                    if (noResults) noResults.classList.add('hidden');
+                }
+            });
+        }
+    });
+    </script>
 {% endblock %}
