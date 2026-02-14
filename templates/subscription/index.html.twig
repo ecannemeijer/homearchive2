@@ -38,25 +38,25 @@
     {% if subscriptions|length > 0 %}
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200" id="subscriptions-table">
+                <table class="min-w-full divide-y divide-gray-200 table-fixed" id="subscriptions-table">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4 sm:w-1/3">
                                 Naam
                             </th>
-                            <th scope="col" class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                                 Type
                             </th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                                 Kosten
                             </th>
-                            <th scope="col" class="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                                 Categorie
                             </th>
-                            <th scope="col" class="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
                                 Einddatum
                             </th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-36 sm:w-48">
                                 Acties
                             </th>
                         </tr>
@@ -67,10 +67,10 @@
                             data-name="{{ subscription.name|lower }}" 
                             data-category="{{ subscription.category|lower }}" 
                             data-type="{{ subscription.type }}">
-                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 sm:px-6 py-4 w-1/4 sm:w-1/3">
                                 <div class="flex items-center">
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="text-sm font-medium text-gray-900 truncate" title="{{ subscription.name }}">
                                             {{ subscription.name }}
                                             {% if not subscription.isActive %}
                                                 <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
@@ -86,16 +86,16 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
+                            <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap w-24">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ subscription.type == 'subscription' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
                                     {{ subscription.type == 'subscription' ? 'Abonnement' : 'Verzekering' }}
                                 </span>
                             </td>
-                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap w-24">
                                 <div class="text-sm font-semibold text-gray-900">€{{ subscription.cost|number_format(2, ',', '.') }}</div>
                                 <div class="text-xs text-gray-500">/ {{ subscription.frequency == 'monthly' ? 'mnd' : 'jaar' }}</div>
                             </td>
-                            <td class="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td class="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500 w-32">
                                 {% if subscription.category %}
                                     <span class="inline-flex items-center">
                                         <i class="fas fa-tag text-gray-400 mr-1" aria-hidden="true"></i>
@@ -105,23 +105,23 @@
                                     <span class="text-gray-400">-</span>
                                 {% endif %}
                             </td>
-                            <td class="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td class="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500 w-28">
                                 {% if subscription.endDate %}
                                     {{ subscription.endDate|date('d-m-Y') }}
                                 {% else %}
                                     <span class="text-gray-400">-</span>
                                 {% endif %}
                             </td>
-                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium w-36 sm:w-48">
                                 <div class="flex items-center justify-end gap-2">
                                     <a href="{{ path('subscription_show', {id: subscription.id}) }}" 
-                                       class="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                       class="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shrink-0"
                                        aria-label="Bekijk {{ subscription.name }}">
                                         <i class="fas fa-eye" aria-hidden="true"></i>
                                         <span class="hidden sm:inline">Bekijken</span>
                                     </a>
                                     <a href="{{ path('subscription_edit', {id: subscription.id}) }}" 
-                                       class="inline-flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                       class="inline-flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 shrink-0"
                                        aria-label="Bewerk {{ subscription.name }}">
                                         <i class="fas fa-edit" aria-hidden="true"></i>
                                         <span class="hidden sm:inline">Bewerken</span>

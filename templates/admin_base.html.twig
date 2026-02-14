@@ -6,13 +6,24 @@
     <meta name="description" content="HomeArchive Admin Panel - Beheer gebruikers en systeem">
     <title>{% block title %}Admin - HomeArchive{% endblock %}</title>
     
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN (Development) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Suppress Tailwind CDN production warning
+        tailwind.config = {
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
           integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
           crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
     
     {% block stylesheets %}{% endblock %}
 </head>
