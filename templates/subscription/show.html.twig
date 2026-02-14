@@ -139,11 +139,105 @@
 
         <!-- Notes -->
         {% if subscription.notes %}
-            <div class="border-t pt-6">
-                <h3 class="text-xl font-semibold text-gray-900 mb-4">Notities</h3>
+            <div class="border-t pt-6 mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4"><i class="fas fa-sticky-note text-gray-600"></i> Notities</h3>
                 <p class="text-gray-700 whitespace-pre-wrap">{{ subscription.notes }}</p>
             </div>
         {% endif %}
+
+        <!-- Documents Section -->
+        <div class="border-t pt-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-file-alt text-blue-600"></i> Documenten & Bestanden
+            </h3>
+            
+            <!-- Upload Form -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                <form method="post" action="{{ path('subscription_upload_document', {id: subscription.id}) }}" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-3">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('upload' ~ subscription.id) }}">
+                    
+                    <div class="flex-1">
+                        <label for="document" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-upload"></i> Bestand uploaden (PDF, JPG, PNG - max 5MB)
+                        </label>
+                        <input type="file" 
+                               id="document" 
+                               name="document" 
+                               accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
+                               required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <button type="submit" 
+                                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Uploaden</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Documents List -->
+            {% if subscription.documents|length > 0 %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for document in subscription.documents %}
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex-1 min-w-0">
+                                    {% if document.fileType starts with 'image/' %}
+                                        <i class="fas fa-image text-green-600 text-2xl"></i>
+                                    {% else %}
+                                        <i class="fas fa-file-pdf text-red-600 text-2xl"></i>
+                                    {% endif %}
+                                </div>
+                                <form method="post" action="{{ path('subscription_delete_document', {id: document.id}) }}" 
+                                      onsubmit="return confirm('Weet u zeker dat u dit document wilt verwijderen?');" class="inline">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete_doc' ~ document.id) }}">
+                                    <button type="submit" 
+                                            class="text-red-600 hover:text-red-700 transition-colors"
+                                            title="Verwijderen">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <h4 class="text-sm font-medium text-gray-900 mb-1 truncate" title="{{ document.originalFilename }}">
+                                {{ document.originalFilename }}
+                            </h4>
+                            
+                            <p class="text-xs text-gray-500 mb-3">
+                                {{ (document.fileSize / 1024)|number_format(0) }} KB • 
+                                {{ document.uploadedAt|date('d-m-Y H:i') }}
+                            </p>
+                            
+                            {% if document.fileType starts with 'image/' %}
+                                <a href="{{ asset(document.filePath) }}" 
+                                   target="_blank" 
+                                   class="block mb-2">
+                                    <img src="{{ asset(document.filePath) }}" 
+                                         alt="{{ document.originalFilename }}" 
+                                         class="w-full h-32 object-cover rounded border border-gray-200">
+                                </a>
+                            {% endif %}
+                            
+                            <a href="{{ asset(document.filePath) }}" 
+                               target="_blank" 
+                               download="{{ document.originalFilename }}"
+                               class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium">
+                                <i class="fas fa-download"></i>
+                                <span>Bekijken/Downloaden</span>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-folder-open text-4xl mb-2"></i>
+                    <p>Nog geen documenten geüpload</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

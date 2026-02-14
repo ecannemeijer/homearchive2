@@ -150,6 +150,51 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin_users');
     }
 
+    #[Route('/users/{id}/change-password', name: 'admin_user_change_password')]
+    public function changeUserPassword(
+        int $id,
+        Request $request,
+        UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $user = $userRepository->find($id);
+        if (!$user) {
+            $this->addFlash('error', 'Gebruiker niet gevonden.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        if ($request->isMethod('POST')) {
+            $newPassword = $request->request->get('new_password');
+            $confirmPassword = $request->request->get('confirm_password');
+
+            if (empty($newPassword) || empty($confirmPassword)) {
+                $this->addFlash('error', 'Alle velden zijn verplicht.');
+                return $this->render('admin/user_change_password.html.twig', ['user' => $user]);
+            }
+
+            if ($newPassword !== $confirmPassword) {
+                $this->addFlash('error', 'Wachtwoorden komen niet overeen.');
+                return $this->render('admin/user_change_password.html.twig', ['user' => $user]);
+            }
+
+            if (strlen($newPassword) < 8) {
+                $this->addFlash('error', 'Wachtwoord moet minimaal 8 tekens zijn.');
+                return $this->render('admin/user_change_password.html.twig', ['user' => $user]);
+            }
+
+            $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Wachtwoord van gebruiker ' . $user->getName() . ' succesvol gewijzigd.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        return $this->render('admin/user_change_password.html.twig', ['user' => $user]);
+    }
+
     #[Route('/administrators', name: 'admin_administrators')]
     public function administrators(AdminRepository $adminRepository): Response
     {
